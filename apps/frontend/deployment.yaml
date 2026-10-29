@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: apps
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: 746491202337.dkr.ecr.us-east-1.amazonaws.com/eks-canary-rollback/frontend:initial
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 746491202337.dkr.ecr.us-east-1.amazonaws.com/eks-canary-rollback/frontend:initial
+          image: 746491202337.dkr.ecr.us-east-1.amazonaws.com/eks-canary-rollback/frontend:9a0ccf98
           ports:
             - containerPort: 8080
           readinessProbe:

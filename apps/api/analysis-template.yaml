@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: api-5xx-rate
+  namespace: apps
+spec:
+  args:
+    - name: canary_hash
+  metrics:
+    - name: five-xx-ratio
+      interval: 30s
+      count: 4
+      failureLimit: 1
+      successCondition: result[0] < 0.05
+      provider:
+        prometheus:
+          address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+          query: |
+            sum(rate(http_requests_total{namespace="apps",pod_template_hash="{{args.canary_hash}}",status=~"5.."}[1m]))
+            /
+            sum(rate(http_requests_total{namespace="apps",pod_template_hash="{{args.canary_hash}}"}[1m]))

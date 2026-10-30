@@ -1,10 +1,11 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: api
   namespace: apps
 spec:
-  replicas: 2
+  replicas: 5
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: api
@@ -17,7 +18,8 @@ spec:
         - name: api
           image: 746491202337.dkr.ecr.us-east-1.amazonaws.com/eks-canary-rollback/api:4318a18d
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
           env:
             - name: FAIL_RATE
               value: "0"
@@ -37,3 +39,22 @@ spec:
               memory: 128Mi
             limits:
               memory: 256Mi
+  strategy:
+    canary:
+      stableService: api-stable
+      canaryService: api-canary
+      steps:
+        - setWeight: 20
+        - pause:
+            duration: 30s
+        - analysis:
+            templates:
+              - templateName: api-5xx-rate
+            args:
+              - name: canary_hash
+                valueFrom:
+                  podTemplateHashValue: Latest
+        - setWeight: 50
+        - pause:
+            duration: 30s
+        - setWeight: 100

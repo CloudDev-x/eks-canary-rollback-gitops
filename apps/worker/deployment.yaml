@@ -16,6 +16,9 @@ spec:
       containers:
         - name: worker
           image: 746491202337.dkr.ecr.us-east-1.amazonaws.com/eks-canary-rollback/worker:4318a18d
+          env:
+            - name: APP_VERSION
+              value: "4318a18d"
           resources:
             requests:
               cpu: 50m

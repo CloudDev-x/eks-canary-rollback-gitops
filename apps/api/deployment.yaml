@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api
-          image: 746491202337.dkr.ecr.us-east-1.amazonaws.com/eks-canary-rollback/api:9a0ccf98
+          image: 746491202337.dkr.ecr.us-east-1.amazonaws.com/eks-canary-rollback/api:4318a18d
           ports:
             - containerPort: 8080
           env:

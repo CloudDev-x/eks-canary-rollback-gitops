@@ -11,11 +11,15 @@ spec:
       interval: 30s
       count: 4
       failureLimit: 1
-      successCondition: result[0] < 0.05
+      successCondition: "len(result) == 0 || result[0] < 0.05"
       provider:
         prometheus:
           address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
           query: |
-            sum(rate(http_requests_total{namespace="apps",pod_template_hash="{{args.canary_hash}}",status=~"5.."}[1m]))
+            (
+              sum(rate(http_requests_total{namespace="apps",pod_template_hash="{{args.canary_hash}}",status=~"5.."}[1m])) or vector(0)
+            )
             /
-            sum(rate(http_requests_total{namespace="apps",pod_template_hash="{{args.canary_hash}}"}[1m]))
+            (
+              sum(rate(http_requests_total{namespace="apps",pod_template_hash="{{args.canary_hash}}"}[1m])) > 0
+            )
